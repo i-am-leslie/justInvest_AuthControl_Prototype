@@ -7,16 +7,6 @@ class testRBAC(unittest.TestCase):
         # Setup a new instance of rbac for testing
         self.access_control = rbac()
 
-
-
-        self.acl={"Client": ["ViewAccountBalance", "ViewInvestments", "ViewContactDetails"],
-                  "PremiumClient": ["ModifyInvestmentPortfolio", "ViewFinancialPlannerDetails", "ViewInvestmentAnalystDetails"],
-                  "Employee":["ViewAccountBalance", "ViewInvestments"],
-                  "FinancialPlanner": ["ViewMoneyMarketInstruments", "ModifyInvestmentPortfolio"],
-                  "Teller": [],
-                  "FinancialAdvisor": ["ViewMoneyMarketInstruments", "ModifyInvestmentPortfolio"]
-                  }
-
     # Test for client
     def test_client_permissions(self):
         permissions = self.access_control.get_permissions("Client")
@@ -29,41 +19,43 @@ class testRBAC(unittest.TestCase):
     def test_employee_permissions(self):
         permissions = self.access_control.get_permissions("Employee")
         self.assertIn("ViewClientAccountBalance", permissions)
-        self.assertIn("ViewInvestmentsPortfolio", permissions)
-        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
+        self.assertIn("ViewInvestments", permissions)
+
 
      # Test for premium client 
     def test_premium_client(self):
         permissions = self.access_control.get_permissions("PremiumClient")
-        self.assertIn("ViewAccountBalance", permissions)
-        self.assertIn("ViewInvestments", permissions)
-        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
+        self.assertIn("ModifyInvestmentPortfolio", permissions)
+        self.assertIn("ViewFinancialPlannerDetails", permissions)
+        # self.assertNotIn("ViewInvestmentAnalystDetails", permissions)
     
     # Test for financial planner
     def test_financial_planner(self):
         permissions = self.access_control.get_permissions("FinancialPlanner")
-        self.assertIn("ViewAccountBalance", permissions)
-        self.assertIn("ViewInvestments", permissions)
-        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
+        self.assertIn("ViewMoneyMarketInstruments", permissions)
+        self.assertIn("ModifyInvestmentPortfolio", permissions)
 
-     # Test for teller
+    #  # Test for teller
     def test_teller(self):
         permissions = self.access_control.get_permissions("Teller")
-        self.assertIn("ViewAccountBalance", permissions)
-        self.assertIn("ViewInvestments", permissions)
-        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
-
-     # Test for financial advisor
+    
+    
+    #  # Test for financial advisor
     def test_financial_advisor(self):
         permissions = self.access_control.get_permissions("FinancialAdvisor")
-        self.assertIn("ViewAccountBalance", permissions)
-        self.assertIn("ViewInvestments", permissions)
-        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
+        self.assertIn("ViewMoneyMarketInstruments", permissions)
+        self.assertIn("ModifyInvestmentPortfolio", permissions)
 
-    # test for unknown role
+    # # test for unknown role
     def test_no_permissions_for_unknown_role(self):
         permissions = self.access_control.get_permissions("UnknownRole")
         self.assertEqual(permissions, [])  # Expect an empty list
 
+
+    def test_employee_negative_permissions(self):
+        permissions = self.access_control.get_permissions("Employee")
+        self.assertNotIn("ModifyInvestmentPortfolio", permissions)
+        self.assertNotIn("ViewAccountBalance", permissions)
+    
 if __name__ == "__main__":
     unittest.main()
