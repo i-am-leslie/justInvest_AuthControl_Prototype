@@ -11,24 +11,33 @@ class JustInvestSystem:
     def __init__(self):
         self.users = {}  # Store users with their usernames as keys
         self.rbac = rbac() 
+        self.common_weak_passwords = None
+        self.weak_password_file = 'weak_passd.txt'
 
     def add_user(self, user):
         self.users[user.userName] = user
 
     def login(self, username, password):
-        user = self.users.get(username)
         password_file=PasswordFile()
         records=password_file.get_record(username)
-        print(records)
-        if user and password_file.get_record(username):
-            
-            return user
+       
+        rehashed_password=password_file.hash_password(password,records['salt'])
+        if rehashed_password == records['hashed_password']: 
+            return records['role']
+        print("No password records found for the username.")
         return None
 
     def display_user_operations(self, user):
         if user:
-            return self.rbac.get_permissions(user.getRole())
+            return self.rbac.get_permissions(user)
         return "Access Denied"
+    
+    def load_weak_passwords(self):
+            try:
+                with open(self.weak_password_file, 'r') as file:
+                    self.common_weak_passwords = set(file.read().splitlines())
+            except FileNotFoundError:
+                self.common_weak_passwords = set(["password"])
 
     def check_password(self, password, username):
         if len(password) < 8 or len(password) > 12:
@@ -43,7 +52,11 @@ class JustInvestSystem:
             return False
         if password == username:
             return False
-        # Add check for common passwords here if necessary
+        # check for common passwords
+        if password in self.common_weak_passwords:
+            print("Password in common weak password")
+            return False
+
         return True
 
     def register_user(self):
@@ -54,6 +67,8 @@ class JustInvestSystem:
         username = input("Enter username: ")
         password_file=PasswordFile()
         salt = secrets.token_hex(16)
+        self.load_weak_passwords()
+
         
         # Prompt for password with validation
         while True:
@@ -99,6 +114,9 @@ class JustInvestSystem:
         hashed_password = password_file.hash_password(password, salt)
         password_file.add_record(username, salt,
                             hashed_password, user.__class__.__name__)
+        
+
+
 
 
 class PasswordFile:
