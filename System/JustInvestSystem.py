@@ -1,7 +1,10 @@
 # Need to write why i used this import
+import os
 import re   
 from Users import *
 from AccessControl import rbac
+import secrets
+import hashlib
 
 
 class JustInvestSystem:
@@ -14,8 +17,11 @@ class JustInvestSystem:
 
     def login(self, username, password):
         user = self.users.get(username)
-        if user and user.password == password:
-            print(user.display_info)
+        password_file=PasswordFile()
+        records=password_file.get_record(username)
+        print(records)
+        if user and password_file.get_record(username):
+            
             return user
         return None
 
@@ -46,6 +52,8 @@ class JustInvestSystem:
         
         # Prompt for username
         username = input("Enter username: ")
+        password_file=PasswordFile()
+        salt = secrets.token_hex(16)
         
         # Prompt for password with validation
         while True:
@@ -88,3 +96,50 @@ class JustInvestSystem:
         self.add_user(user)
         print(f"User '{username}' registered successfully as a {user.__class__.__name__}.")
         print(f"These are the actions you can perform on the system: {self.rbac.get_permissions(user.__class__.__name__)}")
+        hashed_password = password_file.hash_password(password, salt)
+        password_file.add_record(username, salt,
+                            hashed_password, user.__class__.__name__)
+
+
+class PasswordFile:
+    def __init__(self, file_name='passwd.txt'):
+        current_directory = os.getcwd()
+        self.file_path = os.path.join(current_directory, file_name)
+
+        # Check if the file already exists
+        if os.path.exists(self.file_path):
+            print(f"File '{self.file_path}' already exists.")
+        else:
+            print(f"File '{self.file_path}' does not exist.")
+
+    def hash_password(self, password, salt):
+        """
+        Hashes the password using SHA-256 and a salt.
+        """
+        hash_object = hashlib.sha256()
+        hash_object.update((password + salt).encode('utf-8'))
+        hashed_password = hash_object.hexdigest()
+        return hashed_password
+
+    def add_record(self, user_id, salt, hashed_password, role):
+        """
+        Adds a new record to the password file.
+        """
+        with open(self.file_path, 'a') as file:
+            file.write(f"{user_id}:{salt}:{hashed_password}:{role}\n")
+
+    def get_record(self, username):
+        """
+        Retrieves a record from the password file based on user ID.
+        """
+        with open(self.file_path, 'r') as file:
+            for line in file:
+                fields = line.strip().split(':')
+                if fields[0] == username:
+                    return {
+                        'username': fields[0],
+                        'salt': fields[1],
+                        'hashed_password': fields[2],
+                        'role': fields[3]
+                    }
+        return None
