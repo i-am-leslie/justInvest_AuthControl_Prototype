@@ -13,6 +13,10 @@ class JustInvestSystem:
         self.rbac = rbac() 
         self.common_weak_passwords = None
         self.weak_password_file = 'weak_passd.txt'
+        self.logged_in=False
+    
+    def logged_in_status(self):
+        return self.logged_in
 
     def add_user(self, user):
         self.users[user.userName] = user
@@ -29,7 +33,10 @@ class JustInvestSystem:
 
     def display_user_operations(self, user):
         if user:
-            return self.rbac.get_permissions(user)
+            j=0
+            for x in self.rbac.get_permissions(user):
+                j=j+1
+                print(f"{j}" +" "+ x)
         return "Access Denied"
     
     def load_weak_passwords(self):

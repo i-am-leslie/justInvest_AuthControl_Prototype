@@ -17,8 +17,11 @@ def main():
             password = input("Enter password: ")
             user = system.login(username, password)
             if user:
-                print(f"Welcome, {username}! Here are your available operations:")
-                print(system.display_user_operations(user))
+                print(f"Welcome, {username}!")
+                while system.logged_in_status:
+                    print(f"username:{username}")
+                    system.display_user_operations(user)
+                    choice = input("Enter action: ")
             else:
                 print("Invalid username or password.")
         elif choice == "3":

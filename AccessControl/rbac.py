@@ -11,6 +11,8 @@ class rbac():
     
     def get_permissions(self, role):
         # Retrieve the list of permissions for a given role
+        print("role:"+" "+role)
+        print("This are you list of operation")
         return self.acl.get(role, [])
     
 
