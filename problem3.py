@@ -11,7 +11,7 @@ class TestPasswordChecker(unittest.TestCase):
 
     def test_valid_password(self):
         """Test a valid password that meets all requirements."""
-        password = "Valid1@Password1"
+        password = "Valid1@Pass"
         username = "testuser"
         self.assertTrue(self.system.check_password(password, username))
 

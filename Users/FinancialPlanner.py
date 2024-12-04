@@ -5,7 +5,7 @@ class FinancialPlanner(User):
 
     def __init__(self, username, PhoneNumber,passWord):
         super().__init__(username,passWord)
-        self.PhoneNumber = PhoneNumber
+        self.PhoneNumber = 0
         # Money market instrument dont know 
 
     def get_permissions(self):
