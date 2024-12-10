@@ -3,7 +3,7 @@ from .User import User
 class FinancialAdvisor(User):
 
 
-    def __init__(self, username, PhoneNumber,passWord):
+    def __init__(self, username,passWord):
         super().__init__(username,passWord)
         self.PhoneNumber = 0
         # Private  Consumer instrument dont know 

@@ -1,4 +1,5 @@
 from System.JustInvestSystem import JustInvestSystem
+from Users import Teller
 def main():
     system = JustInvestSystem()
     
@@ -18,10 +19,18 @@ def main():
             user = system.login(username, password)
             if user:
                 print(f"Welcome, {username}!")
-                while system.logged_in_status:
-                    print(f"username:{username}")
+                if user== "Teller" and not Teller.is_business_hours():
+                    print("You can only use the system at the allocated time")
+
+                system.change_logged_in_status()
+                while system.logged_in_status():
+                    print(f"username:{username} \n")
                     system.display_user_operations(user)
-                    choice = input("Enter action: ")
+                    print("Press 0 to exit the system\n")
+                    choice = input("Enter action: \n")
+                    if choice=="0":
+                        system.change_logged_in_status()
+
             else:
                 print("Invalid username or password.")
         elif choice == "3":

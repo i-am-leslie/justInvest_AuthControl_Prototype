@@ -57,5 +57,7 @@ class testRBAC(unittest.TestCase):
         self.assertNotIn("ModifyInvestmentPortfolio", permissions)
         self.assertNotIn("ViewAccountBalance", permissions)
     
+    
+    
 if __name__ == "__main__":
     unittest.main()

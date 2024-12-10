@@ -17,9 +17,15 @@ class JustInvestSystem:
     
     def logged_in_status(self):
         return self.logged_in
+    
+    def change_logged_in_status(self):
+       self.logged_in = not self.logged_in
 
-    def add_user(self, user):
+    #This method was created for the purpose of testing question 1 which is to add the list of users given to us 
+    def add_user(self, user): 
         self.users[user.userName] = user
+
+    
 
     def login(self, username, password):
         password_file=PasswordFile()
@@ -29,6 +35,7 @@ class JustInvestSystem:
         if rehashed_password == records['hashed_password']: 
             return records['role']
         print("No password records found for the username.")
+
         return None
 
     def display_user_operations(self, user):
@@ -107,7 +114,7 @@ class JustInvestSystem:
             user = FinancialPlanner(username, password)
         elif role_choice == "5":
             # Assume Tellers have business hours specified, for simplicity here we use a static range
-            user = Teller(username, password, business_hours=(9, 17))
+            user = Teller(username, password)
         elif role_choice == "6":
             user = Employee(username, password)
         else:
@@ -130,12 +137,6 @@ class PasswordFile:
     def __init__(self, file_name='passwd.txt'):
         current_directory = os.getcwd()
         self.file_path = os.path.join(current_directory, file_name)
-
-        # Check if the file already exists
-        if os.path.exists(self.file_path):
-            print(f"File '{self.file_path}' already exists.")
-        else:
-            print(f"File '{self.file_path}' does not exist.")
 
     def hash_password(self, password, salt):
         """
